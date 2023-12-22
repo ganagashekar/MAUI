@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:viewModels="clr-namespace:MauiSignalRChatDemo.ViewModels"
+   
     x:DataType="viewModels:MainPageViewModel">
 
     <ContentPage.Resources>
@@ -19,23 +20,7 @@
         ColumnSpacing="5"
         RowDefinitions="Auto, Auto, Auto, *, Auto"
         RowSpacing="5">
-        <Label Text="User:" VerticalOptions="Center" />
-        <Entry
-            Grid.Column="1"
-            IsEnabled="{Binding IsConnected}"
-            Text="{Binding Name}"
-            VerticalOptions="Center" />
-
-        <Label
-            Grid.Row="1"
-            Text="Message:"
-            VerticalOptions="Center" />
-        <Entry
-            Grid.Row="1"
-            Grid.Column="1"
-            IsEnabled="{Binding IsConnected}"
-            Text="{Binding Message}"
-            VerticalOptions="Center" />
+       
 
         <Button
             Grid.Row="2"
@@ -46,34 +31,41 @@
             Text="Send"
             WidthRequest="75" />
 
-        <ListView
-            Grid.Row="3"
-            Grid.ColumnSpan="2"
-            Margin="0,15,0,0"
-            HasUnevenRows="True"
-            ItemsSource="{Binding Messages}"
-            SeparatorVisibility="None">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <ViewCell>
-                        <Label Text="{Binding .}" />
-                    </ViewCell>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+        <Grid
+      RowDefinitions="*,50">
 
-        <HorizontalStackLayout
+            <CollectionView
+         Grid.Row="0"
+         ItemsSource="{Binding Messages}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate
+               x:DataType="viewModels:BuyStockAlertModel">
+                        <Grid
+                  ColumnDefinitions="*,30">
+                            <Label
+                     Grid.Column="0"
+                     Text="{Binding StockName}" />
+                            
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <HorizontalStackLayout
             Grid.Row="4"
             Grid.ColumnSpan="2"
             HorizontalOptions="Center"
             Spacing="5">
-            <Button Command="{Binding ConnectCommand}" Text="Connect" />
+                <Button Command="{Binding ConnectCommand}" Text="Connect" />
 
-            <Button
+                <Button
                 BackgroundColor="Red"
                 Command="{Binding DisconnectCommand}"
                 Text="Disconnect" />
-        </HorizontalStackLayout>
+            </HorizontalStackLayout>
+
+        </Grid>
+
+        
 
     </Grid>
 </ContentPage>

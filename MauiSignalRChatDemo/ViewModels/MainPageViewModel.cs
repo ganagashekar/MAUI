@@ -5,6 +5,42 @@ using System.Collections.ObjectModel;
 
 namespace MauiSignalRChatDemo.ViewModels
 {
+
+    public  partial class BuyStockAlertModel :ObservableObject
+    {
+        [ObservableProperty]
+        public string _symbol;
+        [ObservableProperty]
+        public string _stockName;
+        [ObservableProperty]
+        public decimal _price;
+    }
+    //public partial class EquitiesModel
+    //{
+
+    //    public string symbol { get; set; }
+
+
+    //    public string stockname { get; set; }
+
+
+    //    public double open { get; set; }
+
+
+    //    public double close { get; set; }
+
+
+    //    public double last { get; set; }
+
+
+    //    public double change { get; set; }
+
+
+    //    public decimal buyPrice { get; set; }
+
+
+    //    public double sellPrice { get; set; }
+    //}
     public partial class MainPageViewModel : ObservableObject
     {
         private readonly HubConnection _hubConnection;
@@ -16,7 +52,7 @@ namespace MauiSignalRChatDemo.ViewModels
         string _message;
 
         [ObservableProperty]
-        ObservableCollection<string> _messages;
+        ObservableCollection<BuyStockAlertModel> _messages;
 
         [ObservableProperty]
         bool _isConnected;
@@ -24,35 +60,54 @@ namespace MauiSignalRChatDemo.ViewModels
         public MainPageViewModel()
         {
             _hubConnection = new HubConnectionBuilder()
-                .WithUrl($"https://yoururlhere.com/chatHub")
+                .WithUrl($"https://localhost:7189/BreezeOperation")
                 .Build();
 
-            Messages ??= new ObservableCollection<string>();
+            //_obsrvequities ??= new ObservableCollection<EquitiesViewModel>();
 
-            _hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
+            _hubConnection.On<BuyStockAlertModel[]>("SendGetBuyStockTriggers", result =>
             {
+
+
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    Messages.Add($"{user} says {message}");
+                    foreach (var item in result)
+                    {
+
+                        _messages.Add(new BuyStockAlertModel() { _stockName = item._stockName }
+
+
+
+
+                        );
+                    }
+
+
+
+                    //Messages.Add($"{user} says {message}");
                 });
             });
+           
         }
 
         [RelayCommand]
         async Task Connect()
         {
+
             if (_hubConnection.State == HubConnectionState.Connecting ||
                 _hubConnection.State == HubConnectionState.Connected) return;
 
             await _hubConnection.StartAsync();
-
+            Messages ??= new ObservableCollection<BuyStockAlertModel>();
+            await _hubConnection.SendAsync("GetBuyStockTriggers");
             IsConnected = true;
         }
 
         [RelayCommand]
         async Task Disconnect()
         {
-            
+            _messages.FirstOrDefault().StockName = "ganga";
+                
             if (_hubConnection.State == HubConnectionState.Disconnected) return;
 
             await _hubConnection.StopAsync();
