@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Maui;
+using MauiSignalRChatDemo.Pages;
 using MauiSignalRChatDemo.ViewModels;
 using Microsoft.Extensions.Logging;
 
@@ -19,7 +20,8 @@ public static class MauiProgram
 			});
 
         builder.Services.AddSingleton<MainPage>();
-        builder.Services.AddSingleton<MainPageViewModel>();
+        builder.Services.AddSingleton<EqutiesList>();
+        builder.Services.AddSingleton<EquitiesViewModel>();
 
 #if DEBUG
         builder.Logging.AddDebug();

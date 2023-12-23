@@ -1,47 +1,32 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MauiSignalRChatDemo.Models;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.Collections.ObjectModel;
+using System.Text.Json;
 
 namespace MauiSignalRChatDemo.ViewModels
 {
 
-    public  partial class BuyStockAlertModel :ObservableObject
+    public partial class BuyStockAlertModel : ObservableObject
     {
         [ObservableProperty]
         public string _symbol;
         [ObservableProperty]
         public string _stockName;
         [ObservableProperty]
-        public decimal _price;
+        public decimal _buyATPrice;
+        [ObservableProperty]
+        public decimal _sellATPrice;
+        [ObservableProperty]
+        public decimal _currentPrice;
+
+        [ObservableProperty]
+        public decimal _currentChange;
     }
-    //public partial class EquitiesModel
-    //{
 
-    //    public string symbol { get; set; }
-
-
-    //    public string stockname { get; set; }
-
-
-    //    public double open { get; set; }
-
-
-    //    public double close { get; set; }
-
-
-    //    public double last { get; set; }
-
-
-    //    public double change { get; set; }
-
-
-    //    public decimal buyPrice { get; set; }
-
-
-    //    public double sellPrice { get; set; }
-    //}
-    public partial class MainPageViewModel : ObservableObject
+    public partial class EquitiesViewModel : ObservableObject
     {
         private readonly HubConnection _hubConnection;
 
@@ -57,37 +42,39 @@ namespace MauiSignalRChatDemo.ViewModels
         [ObservableProperty]
         bool _isConnected;
 
-        public MainPageViewModel()
+        public EquitiesViewModel()
         {
             _hubConnection = new HubConnectionBuilder()
-                .WithUrl($"https://localhost:7189/BreezeOperation")
+                .WithUrl($"http://localhost:90/BreezeOperation")
                 .Build();
 
-            //_obsrvequities ??= new ObservableCollection<EquitiesViewModel>();
+            Connect();
 
             _hubConnection.On<BuyStockAlertModel[]>("SendGetBuyStockTriggers", result =>
             {
-
-
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     foreach (var item in result)
                     {
-
-                        _messages.Add(new BuyStockAlertModel() { _stockName = item._stockName }
-
-
-
-
+                        _messages.Add(new BuyStockAlertModel() { _stockName = item._stockName, _buyATPrice = item._buyATPrice, _symbol = item._symbol, _sellATPrice = item._sellATPrice, _currentPrice = 0 }
                         );
                     }
 
-
-
-                    //Messages.Add($"{user} says {message}");
                 });
+
+
             });
-           
+            _hubConnection.On<string>("SendLiveData", param =>
+            {
+                LiveStockData livedata = JsonSerializer.Deserialize<LiveStockData>(param);
+                if (_messages.Count > 0 && _messages.FirstOrDefault(x => x._symbol == livedata.symbol) != null)
+                {
+                    _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).CurrentPrice = Convert.ToDecimal(livedata.last);
+                    _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).CurrentChange = Convert.ToDecimal(livedata.change);
+                }
+            });
+
+
         }
 
         [RelayCommand]
@@ -107,7 +94,7 @@ namespace MauiSignalRChatDemo.ViewModels
         async Task Disconnect()
         {
             _messages.FirstOrDefault().StockName = "ganga";
-                
+
             if (_hubConnection.State == HubConnectionState.Disconnected) return;
 
             await _hubConnection.StopAsync();

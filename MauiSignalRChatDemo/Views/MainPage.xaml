@@ -4,9 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-    xmlns:viewModels="clr-namespace:MauiSignalRChatDemo.ViewModels"
-   
-    x:DataType="viewModels:MainPageViewModel">
+    >
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -14,58 +12,38 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid
-        Padding="15"
-        ColumnDefinitions="Auto, *"
-        ColumnSpacing="5"
-        RowDefinitions="Auto, Auto, Auto, *, Auto"
-        RowSpacing="5">
-       
+    <ScrollView>
+        <VerticalStackLayout 
+            Spacing="25" 
+            Padding="30,0" 
+            VerticalOptions="Center">
 
-        <Button
-            Grid.Row="2"
-            Grid.Column="1"
-            Command="{Binding SendMessageCommand}"
-            HorizontalOptions="End"
-            IsEnabled="{Binding IsConnected}"
-            Text="Send"
-            WidthRequest="75" />
+            <Image
+                Source="dotnet_bot.png"
+                SemanticProperties.Description="Cute dot net bot waving hi to you!"
+                HeightRequest="200"
+                HorizontalOptions="Center" />
 
-        <Grid
-      RowDefinitions="*,50">
+            <Label 
+                Text="Hello, World!"
+                SemanticProperties.HeadingLevel="Level1"
+                FontSize="32"
+                HorizontalOptions="Center" />
 
-            <CollectionView
-         Grid.Row="0"
-         ItemsSource="{Binding Messages}">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate
-               x:DataType="viewModels:BuyStockAlertModel">
-                        <Grid
-                  ColumnDefinitions="*,30">
-                            <Label
-                     Grid.Column="0"
-                     Text="{Binding StockName}" />
-                            
-                        </Grid>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-            <HorizontalStackLayout
-            Grid.Row="4"
-            Grid.ColumnSpan="2"
-            HorizontalOptions="Center"
-            Spacing="5">
-                <Button Command="{Binding ConnectCommand}" Text="Connect" />
+            <Label 
+                Text="Welcome to .NET Multi-platform App UI"
+                SemanticProperties.HeadingLevel="Level2"
+                SemanticProperties.Description="Welcome to dot net Multi platform App U I"
+                FontSize="18"
+                HorizontalOptions="Center" />
 
-                <Button
-                BackgroundColor="Red"
-                Command="{Binding DisconnectCommand}"
-                Text="Disconnect" />
-            </HorizontalStackLayout>
+            <Button 
+                x:Name="CounterBtn"
+                Text="Click me"
+                SemanticProperties.Hint="Counts the number of times you click"
+                
+                HorizontalOptions="Center" />
 
-        </Grid>
-
-        
-
-    </Grid>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
