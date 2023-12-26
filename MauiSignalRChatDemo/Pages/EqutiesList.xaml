@@ -4,52 +4,71 @@
              x:Class="MauiSignalRChatDemo.Pages.EqutiesList"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:viewModels="clr-namespace:MauiSignalRChatDemo.ViewModels"
+    xmlns:local="clr-namespace:MauiSignalRChatDemo"
     x:DataType="viewModels:EquitiesViewModel"
              Title="EqutiesList">
+
+    <ContentPage.Resources>
+        <local:ColorChangedConverter x:Key="colorChangedConverter" />
+    </ContentPage.Resources>
+    
     <VerticalStackLayout>
-        
 
-        <Grid>
+        <Grid RowDefinitions="*"
+   ColumnDefinitions="*"
+      >
+                
 
-
-
-
-
-            <Grid
-      RowDefinitions="Auto">
+               
+            <ScrollView VerticalScrollBarVisibility="Always">
 
                 <CollectionView
-         Grid.Row="0"
-         ItemsSource="{Binding Messages}"
+          Grid.Row="0"
+            Grid.Column="0"
+                    HeightRequest="750"
+                    VerticalOptions="FillAndExpand"
+                    HorizontalOptions="FillAndExpand"
+         ItemsSource="{Binding Messages} "
                     >
                     <CollectionView.ItemTemplate>
                         <DataTemplate
                x:DataType="viewModels:BuyStockAlertModel">
-                            <StackLayout Padding="0,0,0,1">
-                                <Grid  RowSpacing="24" ColumnSpacing="48" VerticalOptions="Fill" >
+                            <StackLayout  >
+                                <ScrollView VerticalOptions="FillAndExpand">
+                                    <Grid  RowSpacing="10" ColumnSpacing="10" VerticalOptions="FillAndExpand" >
                                     
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="400"></ColumnDefinition>
+                                        <ColumnDefinition Width="300"></ColumnDefinition>
+                                        <ColumnDefinition Width="100"></ColumnDefinition>
+                                        <ColumnDefinition Width="100"></ColumnDefinition>
+                                        <ColumnDefinition Width="100"></ColumnDefinition>
+                                        <ColumnDefinition Width="100"></ColumnDefinition>
+                                        <ColumnDefinition Width="100"></ColumnDefinition>
                                         <ColumnDefinition Width="100"></ColumnDefinition>
                                         <ColumnDefinition Width="100"></ColumnDefinition>
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
+                                       
                                     </Grid.RowDefinitions>
-                                    <Label Grid.Column="0" Grid.Row="0" Text="{Binding StockName}" FontSize="14" />
-                                    <Label Grid.Column="2" Grid.Row="0" Text="{Binding Symbol}" FontSize="9" />
-                                    <Label Grid.Column="1" Grid.Row="0" Text="{Binding CurrentPrice}" FontSize="14" />
-                                    <Label Grid.Column="1" Grid.Row="0" Text="{Binding BuyATPrice}" FontSize="14" />
-                                    <Label Grid.Column="1" Grid.Row="0" Text="{Binding SellATPrice}" FontSize="14" />
-
+                                        <Label Grid.Column="0"  VerticalTextAlignment="Center" HorizontalTextAlignment="Start" Grid.Row="0"   Text="{Binding StockName}" FontSize="10" />
+                                        <Label Grid.Column="1"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Grid.Row="0" Text="{Binding Symbol}" FontSize="9" />
+                                        <Label Grid.Column="2"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center" TextColor="{Binding Bgcolor,Converter={StaticResource colorChangedConverter}}" Grid.Row="0" Text="{Binding CurrentPrice}" FontSize="14" />
+                                        <Label Grid.Column="3"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Grid.Row="0" Text="{Binding BuyATPrice}" FontSize="14" />
+                                        <Label Grid.Column="4"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Grid.Row="0" Text="{Binding SellATPrice}" FontSize="14" />
+                                        <Label Grid.Column="5"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Grid.Row="0" Text="{Binding CurrentChange}" FontSize="14" />
+                                    <Button Grid.Column="6"  HeightRequest="32"  IsEnabled="{Binding IsSell}" Text="Sell"  />
+                                        <Button   Grid.Column="7" HeightRequest="32" IsEnabled="{Binding IsBuy}"  Text="Buy" />
                                 </Grid>
-                            </StackLayout>
+                                </ScrollView>
+                            </StackLayout> 
                           
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
-                <HorizontalStackLayout IsVisible="false"
+            </ScrollView>
+
+            <HorizontalStackLayout IsVisible="false"
             Grid.Row="4"
             Grid.ColumnSpan="2"
             HorizontalOptions="Center"
@@ -63,6 +82,7 @@
                 </HorizontalStackLayout>
 
             </Grid>
-        </Grid>
+        
+        
     </VerticalStackLayout>
 </ContentPage>
