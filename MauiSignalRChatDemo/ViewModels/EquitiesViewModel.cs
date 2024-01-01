@@ -18,7 +18,7 @@ namespace MauiSignalRChatDemo.ViewModels
         [ObservableProperty]
         public decimal _buyATPrice;
         [ObservableProperty]
-        public decimal _buyATChange;
+        public decimal? _buyATChange;
         [ObservableProperty]
         public decimal _sellATPrice;
         [ObservableProperty]
@@ -82,7 +82,13 @@ namespace MauiSignalRChatDemo.ViewModels
                 {
                     foreach (var item in result)
                     {
-                        _messages.Add(new BuyStockAlertModel() { _bgcolor= 1, _buyATChange = item._buyATChange, _stockCode=item._stockCode, _IsBuy=true, _stockName = item._stockName, _buyATPrice = item._buyATPrice, _symbol = item._symbol, _sellATPrice = item._sellATPrice, _currentPrice = 0 }
+                        _messages.Add(new BuyStockAlertModel() { _bgcolor= 1,
+                            _buyATChange = item._buyATChange== Convert.ToDecimal(-9999.00) ? null: item._buyATChange, 
+                            _stockCode=item._stockCode, _IsBuy=true, 
+                            _stockName = item._stockName, 
+                            _buyATPrice = item._buyATPrice, _symbol = item._symbol, 
+                            _sellATPrice = item._sellATPrice, 
+                            _currentPrice = 0 }
                         );
                     }
 
