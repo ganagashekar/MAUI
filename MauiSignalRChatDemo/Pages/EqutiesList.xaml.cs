@@ -10,4 +10,6 @@ public partial class EqutiesList : ContentPage
 		InitializeComponent();
         BindingContext = viewModel;
     }
+
+
 }
