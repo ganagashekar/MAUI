@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 using Skender.Stock.Indicators;
 using System;
 using System.Collections.ObjectModel;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Timers;
 
@@ -76,7 +77,9 @@ namespace MauiSignalRChatDemo.ViewModels
         [ObservableProperty]
         ObservableCollection<BuyStockAlertModel> _messages;
 
-        List<LiveStockData> listofTicks = new List<LiveStockData>();
+        //List<LiveStockData> listofTicks = new List<LiveStockData>();
+
+        Dictionary<string, List<LiveStockData>> dictionary = new Dictionary<string, List<LiveStockData>>();
 
         [ObservableProperty]
         bool _isConnected;
@@ -88,7 +91,7 @@ namespace MauiSignalRChatDemo.ViewModels
             Console.WriteLine("### Timer Started ###");
 
             DateTime nowTime = DateTime.Now;
-            DateTime scheduledTime = new DateTime(nowTime.Year, nowTime.Month, nowTime.Day, 15, 28, 0); 
+            DateTime scheduledTime = new DateTime(nowTime.Year, nowTime.Month, nowTime.Day, 18, 28, 0);
             //Specify your scheduled time HH,MM,SS [8am and 42 minutes]
             //if (nowTime > scheduledTime)
             //{
@@ -116,7 +119,7 @@ namespace MauiSignalRChatDemo.ViewModels
 
 
             }
-           
+
         }
 
         public async Task InitiICICAsync()
@@ -216,6 +219,7 @@ namespace MauiSignalRChatDemo.ViewModels
             //    //.WithUrl("https://localhost:7189/BreezeOperation")
             //    .Build();
             _hubConnection = new HubConnectionBuilder().WithUrl("http://localhost:45/breezeOperation").WithAutomaticReconnect().Build();
+            //_hubConnection = new HubConnectionBuilder().WithUrl("https://localhost:7189/BreezeOperation").WithAutomaticReconnect().Build();
             _hubConnection.KeepAliveInterval = TimeSpan.FromSeconds(30);
             Connect();
             schedule_Timer();
@@ -251,45 +255,50 @@ namespace MauiSignalRChatDemo.ViewModels
 
             _hubConnection.On<string>("SendCaptureLiveDataForAutomation", async param =>
             {
-
                 LiveStockData livedata = JsonSerializer.Deserialize<LiveStockData>(param);
                 livedata.LTT_DATE = GetParseLTT(livedata.ltt);
-                listofTicks.Add(livedata);
+                var dictionaryValue = CollectionsMarshal.GetValueRefOrAddDefault(dictionary, livedata.symbol, out bool exists);
+                if (dictionaryValue==null)
+                {
+                    dictionaryValue = new List<LiveStockData>();
+                }
+                dictionaryValue.Add(livedata);
                 var findsymbol = _messages.FirstOrDefault(x => x.Symbol == livedata.symbol);
                 if (_messages.Count > 0 && findsymbol != null)
                 {
                     try
                     {
-                        List<Quote> quotesList = listofTicks.Where(x => x.symbol == livedata.symbol).ToList().Select(x => new Quote
+                       
+                        dictionary[livedata.symbol] = dictionaryValue.OrderByDescending(x => Convert.ToDateTime(livedata.LTT_DATE)).Take(100).ToList();
+                        List<Quote> quotesList = dictionaryValue.Where(x => x.symbol == livedata.symbol).ToList().Select(x => new Quote
                         {
                             Close = Convert.ToDecimal(livedata.last),
                             Open = Convert.ToDecimal(livedata.open),
-
-
                             Date = Convert.ToDateTime(livedata.LTT_DATE),
                             High = Convert.ToDecimal(livedata.high),
                             Low = Convert.ToDecimal(livedata.low),
                             Volume = Convert.ToDecimal(livedata.ttv)
-
                         }).OrderBy(x => x.Date).ToList();
                         //var candleResult = quotesList.GetMarubozu(90).OrderBy(x => x.Date).LastOrDefault(x => x.Match.ToString() == Match.BullSignal.ToString());
                         var candleResult = quotesList.GetMarubozu(85).OrderByDescending(x => x.Date).FirstOrDefault();
-
                         _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).Match = candleResult.Match.ToString();
                         // listofTicks.Where(x => Convert.ToDateTime(x.ltt) == candleResult.Date && x.symbol == livedata.symbol).ToList().ForEach(x => x.isNotified = tue);
 
-                        if (candleResult != null && candleResult.Match.ToString() == Match.BullSignal.ToString())
+                        var bullsis = new List<string>() { Match.BullBasis.ToString(), Match.BullConfirmed.ToString(), Match.BullSignal.ToString() };
+                        var barish = new List<string>() { Match.BearBasis.ToString(), Match.BearConfirmed.ToString(), Match.BearSignal.ToString() };
+                        if (candleResult != null && bullsis.Any(x=> x.ToString().Contains(candleResult.Match.ToString())))
                         {
                             _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).BullishCount = _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).BullishCount + 1;
+                            _hubConnection.InvokeAsync("ExportBuyStockAlterFromAPP_IND", JsonSerializer.Serialize(_messages.Where(x => x.Symbol == livedata.symbol).ToList()));
                         }
-                        if (candleResult != null && candleResult.Match.ToString() == Match.BearSignal.ToString())
+                        if (candleResult != null && barish.Any(x => x.ToString().Contains(candleResult.Match.ToString())))
                         {
                             _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).BearishCount = _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).BearishCount + 1;
+                            _hubConnection.InvokeAsync("ExportBuyStockAlterFromAPP_IND", JsonSerializer.Serialize(_messages.Where(x => x.Symbol == livedata.symbol).ToList()));
                         }
                     }
                     catch (Exception ex)
                     {
-
                         throw;
                     }
                     _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).LttDateTime = livedata.LTT_DATE;
@@ -369,6 +378,23 @@ namespace MauiSignalRChatDemo.ViewModels
 
         [RelayCommand]
         async Task ExportJsonData()
+        {
+
+            try
+            {
+                await _hubConnection.InvokeAsync("ExportBuyStockAlterFromAPP", JsonSerializer.Serialize(this.Messages.ToList()));
+
+                Message = string.Empty;
+            }
+            catch (Exception ex)
+            {
+
+
+            }
+        }
+
+        [RelayCommand]
+        async Task PerformSearchCommand()
         {
 
             try

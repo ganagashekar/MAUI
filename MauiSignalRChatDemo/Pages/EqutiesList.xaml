@@ -6,7 +6,7 @@
     xmlns:viewModels="clr-namespace:MauiSignalRChatDemo.ViewModels"
     xmlns:local="clr-namespace:MauiSignalRChatDemo"
     x:DataType="viewModels:EquitiesViewModel"
-             Title="EqutiesList">
+             Title="">
 
     <ContentPage.Resources>
         <local:ColorChangedConverter x:Key="colorChangedConverter" />
@@ -15,11 +15,13 @@
     <VerticalStackLayout>
 
         <Grid>
-            <HorizontalStackLayout>
-                <Button
+            <HorizontalStackLayout >
+                <Button HeightRequest="20" WidthRequest="60" 
                 BackgroundColor="Red"
                 Command="{Binding ExportJsonDataCommand}"
                 Text="Export" />
+
+               
             </HorizontalStackLayout>
         </Grid>
         <Grid>
