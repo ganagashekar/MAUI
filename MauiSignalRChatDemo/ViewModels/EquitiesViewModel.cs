@@ -59,6 +59,9 @@ namespace MauiSignalRChatDemo.ViewModels
 
         [ObservableProperty]
         public DateTime _lttDateTime;
+
+        [ObservableProperty]
+        public string _data;
     }
 
 
@@ -91,7 +94,7 @@ namespace MauiSignalRChatDemo.ViewModels
             Console.WriteLine("### Timer Started ###");
 
             DateTime nowTime = DateTime.Now;
-            DateTime scheduledTime = new DateTime(nowTime.Year, nowTime.Month, nowTime.Day, 18, 28, 0);
+            DateTime scheduledTime = new DateTime(nowTime.Year, nowTime.Month, nowTime.Day, 15, 28, 0);
             //Specify your scheduled time HH,MM,SS [8am and 42 minutes]
             //if (nowTime > scheduledTime)
             //{
@@ -219,7 +222,7 @@ namespace MauiSignalRChatDemo.ViewModels
             //    //.WithUrl("https://localhost:7189/BreezeOperation")
             //    .Build();
             _hubConnection = new HubConnectionBuilder().WithUrl("http://localhost:45/breezeOperation").WithAutomaticReconnect().Build();
-            //_hubConnection = new HubConnectionBuilder().WithUrl("https://localhost:7189/BreezeOperation").WithAutomaticReconnect().Build();
+           // _hubConnection = new HubConnectionBuilder().WithUrl("https://localhost:7189/BreezeOperation").WithAutomaticReconnect().Build();
             _hubConnection.KeepAliveInterval = TimeSpan.FromSeconds(30);
             Connect();
             schedule_Timer();
@@ -256,7 +259,7 @@ namespace MauiSignalRChatDemo.ViewModels
             _hubConnection.On<string>("SendCaptureLiveDataForAutomation", async param =>
             {
                 LiveStockData livedata = JsonSerializer.Deserialize<LiveStockData>(param);
-                livedata.LTT_DATE = GetParseLTT(livedata.ltt);
+                livedata.LTT_DATE = GetParseLTT(livedata.ltt); //Convert.ToDateTime(livedata.ltt); //
                 var dictionaryValue = CollectionsMarshal.GetValueRefOrAddDefault(dictionary, livedata.symbol, out bool exists);
                 if (dictionaryValue==null)
                 {
@@ -269,7 +272,7 @@ namespace MauiSignalRChatDemo.ViewModels
                     try
                     {
                        
-                        dictionary[livedata.symbol] = dictionaryValue.OrderByDescending(x => Convert.ToDateTime(livedata.LTT_DATE)).Take(100).ToList();
+                       
                         List<Quote> quotesList = dictionaryValue.Where(x => x.symbol == livedata.symbol).ToList().Select(x => new Quote
                         {
                             Close = Convert.ToDecimal(livedata.last),
@@ -279,21 +282,43 @@ namespace MauiSignalRChatDemo.ViewModels
                             Low = Convert.ToDecimal(livedata.low),
                             Volume = Convert.ToDecimal(livedata.ttv)
                         }).OrderBy(x => x.Date).ToList();
+
+
+                      
+
+                        IEnumerable<MacdResult> macdresult = quotesList.GetMacd();
+                        IEnumerable<VolatilityStopResult> Volatilityresults = quotesList.GetVolatilityStop(5, 3);
+                        IEnumerable<RsiResult> rsiResults = quotesList.GetObv().GetRsi(2);
+                      //  IEnumerable<MacdResult> resultssss =quotesList.GetMacd(10,20,9);
                         //var candleResult = quotesList.GetMarubozu(90).OrderBy(x => x.Date).LastOrDefault(x => x.Match.ToString() == Match.BullSignal.ToString());
                         var candleResult = quotesList.GetMarubozu(85).OrderByDescending(x => x.Date).FirstOrDefault();
+                        dictionaryValue.LastOrDefault().CandleResults = candleResult;
+                        dictionaryValue.LastOrDefault().macdResult = macdresult.ToList();
+                        dictionaryValue.LastOrDefault().RsiResult = rsiResults.ToList();
+                        dictionaryValue.LastOrDefault().volatilityStopResults = Volatilityresults.ToList();
+                        dictionary[livedata.symbol] = dictionaryValue.OrderByDescending(x => Convert.ToDateTime(livedata.LTT_DATE)).Take(100).ToList();
+
                         _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).Match = candleResult.Match.ToString();
                         // listofTicks.Where(x => Convert.ToDateTime(x.ltt) == candleResult.Date && x.symbol == livedata.symbol).ToList().ForEach(x => x.isNotified = tue);
+                        var newresul = new
+                        {
 
+                            candleResult = candleResult,
+                            macdresult = macdresult.ToList(),
+                            rsiResults = rsiResults.ToList(),
+                        };
                         var bullsis = new List<string>() { Match.BullBasis.ToString(), Match.BullConfirmed.ToString(), Match.BullSignal.ToString() };
                         var barish = new List<string>() { Match.BearBasis.ToString(), Match.BearConfirmed.ToString(), Match.BearSignal.ToString() };
                         if (candleResult != null && bullsis.Any(x=> x.ToString().Contains(candleResult.Match.ToString())))
                         {
                             _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).BullishCount = _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).BullishCount + 1;
+                            _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).Data = JsonSerializer.Serialize(newresul);
                             _hubConnection.InvokeAsync("ExportBuyStockAlterFromAPP_IND", JsonSerializer.Serialize(_messages.Where(x => x.Symbol == livedata.symbol).ToList()));
                         }
                         if (candleResult != null && barish.Any(x => x.ToString().Contains(candleResult.Match.ToString())))
                         {
                             _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).BearishCount = _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).BearishCount + 1;
+                            _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).Data = JsonSerializer.Serialize(newresul);
                             _hubConnection.InvokeAsync("ExportBuyStockAlterFromAPP_IND", JsonSerializer.Serialize(_messages.Where(x => x.Symbol == livedata.symbol).ToList()));
                         }
                     }
