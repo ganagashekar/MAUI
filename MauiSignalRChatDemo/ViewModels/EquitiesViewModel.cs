@@ -314,12 +314,15 @@ namespace MauiSignalRChatDemo.ViewModels
                             _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).BullishCount = _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).BullishCount + 1;
                             _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).Data = JsonSerializer.Serialize(newresul);
                             _hubConnection.InvokeAsync("ExportBuyStockAlterFromAPP_IND", JsonSerializer.Serialize(_messages.Where(x => x.Symbol == livedata.symbol).ToList()));
+                            _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).Data = "";
                         }
+
                         if (candleResult != null && barish.Any(x => x.ToString().Contains(candleResult.Match.ToString())))
                         {
                             _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).BearishCount = _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).BearishCount + 1;
                             _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).Data = JsonSerializer.Serialize(newresul);
                             _hubConnection.InvokeAsync("ExportBuyStockAlterFromAPP_IND", JsonSerializer.Serialize(_messages.Where(x => x.Symbol == livedata.symbol).ToList()));
+                            _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).Data = "";
                         }
                     }
                     catch (Exception ex)
