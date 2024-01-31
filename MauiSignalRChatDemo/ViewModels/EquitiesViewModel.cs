@@ -210,10 +210,18 @@ namespace MauiSignalRChatDemo.ViewModels
 
         public DateTime GetParseLTT(string ltt)
         {
-            string[] test = ltt.Split(' ');
-            string dateformat = string.Format("{0}-{1}-{2} {3}", test.Last(), test[1].ToString(), test[2].ToString(), test[3].ToString());
-            var result = DateTime.TryParse(dateformat, out var dt);
-            return dt;
+            try
+            {
+                string[] test = ltt.Split(' ');
+                string dateformat = string.Format("{0}-{1}-{2} {3}", test.Last(), test[1].ToString(), test[2].ToString(), test[3].ToString());
+                var result = DateTime.TryParse(dateformat, out var dt);
+                return dt;
+            }
+            catch (Exception ex)
+            {
+
+               return Convert.ToDateTime(ltt);
+            }
         }
         public EquitiesViewModel()
         {
@@ -226,7 +234,8 @@ namespace MauiSignalRChatDemo.ViewModels
             _hubConnection.KeepAliveInterval = TimeSpan.FromSeconds(30);
             Connect();
             schedule_Timer();
-
+            var bullsis = new List<string>() { Match.BullBasis.ToString(), Match.BullConfirmed.ToString(), Match.BullSignal.ToString() };
+                        var barish = new List<string>() { Match.BearBasis.ToString(), Match.BearConfirmed.ToString(), Match.BearSignal.ToString() };
 
 
             _hubConnection.On<BuyStockAlertModel[]>("SendGetBuyStockTriggers", async result =>
@@ -271,8 +280,6 @@ namespace MauiSignalRChatDemo.ViewModels
                 {
                     try
                     {
-                       
-                       
                         List<Quote> quotesList = dictionaryValue.Where(x => x.symbol == livedata.symbol).ToList().Select(x => new Quote
                         {
                             Close = Convert.ToDecimal(livedata.last),
@@ -282,33 +289,21 @@ namespace MauiSignalRChatDemo.ViewModels
                             Low = Convert.ToDecimal(livedata.low),
                             Volume = Convert.ToDecimal(livedata.ttv)
                         }).OrderBy(x => x.Date).ToList();
-
-
-                      
-
                         IEnumerable<MacdResult> macdresult = quotesList.GetMacd();
                         IEnumerable<VolatilityStopResult> Volatilityresults = quotesList.GetVolatilityStop(5, 3);
-                        IEnumerable<RsiResult> rsiResults = quotesList.GetObv().GetRsi(2);
-                      //  IEnumerable<MacdResult> resultssss =quotesList.GetMacd(10,20,9);
-                        //var candleResult = quotesList.GetMarubozu(90).OrderBy(x => x.Date).LastOrDefault(x => x.Match.ToString() == Match.BullSignal.ToString());
+                        IEnumerable<RsiResult> rsiResults = quotesList.GetObv().GetRsi(5);
                         var candleResult = quotesList.GetMarubozu(85).OrderByDescending(x => x.Date).FirstOrDefault();
-                        dictionaryValue.LastOrDefault().CandleResults = candleResult;
-                        dictionaryValue.LastOrDefault().macdResult = macdresult.ToList();
-                        dictionaryValue.LastOrDefault().RsiResult = rsiResults.ToList();
-                        dictionaryValue.LastOrDefault().volatilityStopResults = Volatilityresults.ToList();
                         dictionary[livedata.symbol] = dictionaryValue.OrderByDescending(x => Convert.ToDateTime(livedata.LTT_DATE)).Take(100).ToList();
-
                         _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).Match = candleResult.Match.ToString();
-                        // listofTicks.Where(x => Convert.ToDateTime(x.ltt) == candleResult.Date && x.symbol == livedata.symbol).ToList().ForEach(x => x.isNotified = tue);
                         var newresul = new
                         {
 
                             candleResult = candleResult,
-                            macdresult = macdresult.ToList(),
-                            rsiResults = rsiResults.ToList(),
+                            macdresult = macdresult.LastOrDefault(),
+                            rsiResults = rsiResults.LastOrDefault(),
+                            Volatilityresults = Volatilityresults.LastOrDefault()
                         };
-                        var bullsis = new List<string>() { Match.BullBasis.ToString(), Match.BullConfirmed.ToString(), Match.BullSignal.ToString() };
-                        var barish = new List<string>() { Match.BearBasis.ToString(), Match.BearConfirmed.ToString(), Match.BearSignal.ToString() };
+                        
                         if (candleResult != null && bullsis.Any(x=> x.ToString().Contains(candleResult.Match.ToString())))
                         {
                             _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).BullishCount = _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).BullishCount + 1;
@@ -327,8 +322,9 @@ namespace MauiSignalRChatDemo.ViewModels
                     }
                     catch (Exception ex)
                     {
-                        throw;
+                        
                     }
+                    
                     _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).LttDateTime = livedata.LTT_DATE;
                     _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).CurrentPrice = Convert.ToDecimal(livedata.last);
                     _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).CurrentChange = Convert.ToDecimal(livedata.change);

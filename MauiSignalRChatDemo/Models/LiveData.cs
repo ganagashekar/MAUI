@@ -36,13 +36,6 @@ namespace MauiSignalRChatDemo.Models
         public string ltt { get; set; }
         public DateTime LTT_DATE { set; get; }
 
-        public CandleResult CandleResults { set; get; }
-
-        public List<MacdResult> macdResult { set; get; }
-
-        public List<RsiResult> RsiResult { set; get; }
-
-        public List<VolatilityStopResult> volatilityStopResults { set; get; }
 
         //public string lttDate
         //{

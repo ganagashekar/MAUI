@@ -16,7 +16,7 @@
 
         <Grid>
             <HorizontalStackLayout >
-                <Button HeightRequest="20" WidthRequest="60" 
+                <Button 
                 BackgroundColor="Red"
                 Command="{Binding ExportJsonDataCommand}"
                 Text="Export" />
