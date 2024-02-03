@@ -274,6 +274,7 @@ namespace MauiSignalRChatDemo.ViewModels
                 {
                     dictionaryValue = new List<LiveStockData>();
                 }
+               
                 dictionaryValue.Add(livedata);
                 var findsymbol = _messages.FirstOrDefault(x => x.Symbol == livedata.symbol);
                 if (_messages.Count > 0 && findsymbol != null)
