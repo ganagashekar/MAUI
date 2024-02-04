@@ -312,7 +312,7 @@ namespace MauiSignalRChatDemo.ViewModels
                             _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).Data = JsonSerializer.Serialize(newresul);
                             _hubConnection.InvokeAsync("ExportBuyStockAlterFromAPP_IND", JsonSerializer.Serialize(_messages.Where(x => x.Symbol == livedata.symbol).ToList()));
                             _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).Data = "";
-                            _hubConnection.InvokeAsync("GetTopStockforBuyAutomation");
+                           // _hubConnection.InvokeAsync("GetTopStockforBuyAutomation");
                         }
 
                         if (candleResult != null && barish.Any(x => x.ToString().Contains(candleResult.Match.ToString())))
