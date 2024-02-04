@@ -2,7 +2,7 @@
 using Breeze;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MauiSignalRChatDemo.Models;
+using MyOwnStockAutomation.Models;
 using Microsoft.AspNetCore.SignalR.Client;
 using Skender.Stock.Indicators;
 using System;
@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Timers;
 
-namespace MauiSignalRChatDemo.ViewModels
+namespace MyOwnStockAutomation.ViewModels
 {
 
     public partial class BuyStockAlertModel : ObservableObject
@@ -321,7 +321,7 @@ namespace MauiSignalRChatDemo.ViewModels
                             _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).Data = JsonSerializer.Serialize(newresul);
                             _hubConnection.InvokeAsync("ExportBuyStockAlterFromAPP_IND", JsonSerializer.Serialize(_messages.Where(x => x.Symbol == livedata.symbol).ToList()));
                             _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).Data = "";
-                           // _hubConnection.InvokeAsync("GetTopStockforBuyAutomation");
+                            _hubConnection.InvokeAsync("GetTopStockforBuyAutomation");
                         }
                     }
                     catch (Exception ex)

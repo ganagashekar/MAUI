@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp2", "ConsoleApp2\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockAutomation", "..\AutomationMAUI\StockAutomation\StockAutomation.csproj", "{CCE7212B-5997-4883-A1BE-7CB096C509FC}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyOwnStockAutomation", "OwnStockAutomation\MyOwnStockAutomation.csproj", "{F2E0247A-4984-4032-8DA5-1054C56D1BE8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,11 +36,15 @@ Global
 		{E5520FAA-C04E-4342-B667-067D879E692C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E5520FAA-C04E-4342-B667-067D879E692C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CCE7212B-5997-4883-A1BE-7CB096C509FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CCE7212B-5997-4883-A1BE-7CB096C509FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CCE7212B-5997-4883-A1BE-7CB096C509FC}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{CCE7212B-5997-4883-A1BE-7CB096C509FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CCE7212B-5997-4883-A1BE-7CB096C509FC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CCE7212B-5997-4883-A1BE-7CB096C509FC}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{F2E0247A-4984-4032-8DA5-1054C56D1BE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2E0247A-4984-4032-8DA5-1054C56D1BE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2E0247A-4984-4032-8DA5-1054C56D1BE8}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{F2E0247A-4984-4032-8DA5-1054C56D1BE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2E0247A-4984-4032-8DA5-1054C56D1BE8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

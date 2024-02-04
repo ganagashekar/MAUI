@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+              xmlns:viewModels="clr-namespace:MyOwnStockAutomation.ViewModels"
+             x:Class="MyOwnStockAutomation.Pages.StockList"
+             xmlns:local="clr-namespace:MyOwnStockAutomation"
+    x:DataType="viewModels:StockPredictionViewModel"
+            
+             Title="StockList">
+    <VerticalStackLayout>
+        <Grid>
+            <ScrollView VerticalScrollBarVisibility="Always">
+
+                <CollectionView 
+                    ItemsSource="{Binding PridictedStocks}">
+                    <CollectionView.Header>
+                        <Grid ColumnDefinitions="*,*,*,*,*,*,*,*,*,*,*,*">
+                            <Label FontSize="14" WidthRequest="300"  TextColor="Cyan" Text="Symbol" VerticalTextAlignment="Center" HorizontalTextAlignment="Start" Grid.Column="0" />
+                            <Label FontSize="14" WidthRequest="300"  TextColor="Cyan"  Text="Price" VerticalTextAlignment="Center" HorizontalTextAlignment="Start" Grid.Column="1" />
+                            <Label FontSize="14" WidthRequest="300"  TextColor="Cyan"  Text="Bulish" VerticalTextAlignment="Center" HorizontalTextAlignment="Start"  Grid.Column="2"/>
+                            <Label FontSize="14" WidthRequest="300"  TextColor="Cyan"  Text="Bearish" VerticalTextAlignment="Center" HorizontalTextAlignment="Start"  Grid.Column="3"/>
+                            <Label FontSize="14" WidthRequest="300"  TextColor="Cyan"  Text="Match" VerticalTextAlignment="Center" HorizontalTextAlignment="Start"  Grid.Column="4"/>
+                            <Label FontSize="14" WidthRequest="300"  TextColor="Cyan"  Text="Size" VerticalTextAlignment="Center" HorizontalTextAlignment="Start"  Grid.Column="5"/>
+                            <Label FontSize="14" WidthRequest="300"  TextColor="Cyan"  Text="Body" VerticalTextAlignment="Center" HorizontalTextAlignment="Start"  Grid.Column="6"/>
+                            <Label FontSize="14" WidthRequest="300"  TextColor="Cyan"  Text="Signal" VerticalTextAlignment="Center" HorizontalTextAlignment="Start"  Grid.Column="7"/>
+                            <Label FontSize="14" WidthRequest="300"  TextColor="Cyan"  Text="FastEma" VerticalTextAlignment="Center" HorizontalTextAlignment="Start"  Grid.Column="8"/>
+                            <Label FontSize="14" WidthRequest="300"  TextColor="Cyan"  Text="SlowEma" VerticalTextAlignment="Center" HorizontalTextAlignment="Start"  Grid.Column="9"/>
+                            <Label FontSize="14" WidthRequest="300"  TextColor="Cyan"  Text="Sar" VerticalTextAlignment="Center" HorizontalTextAlignment="Start"  Grid.Column="10"/>
+                            <Label FontSize="14" WidthRequest="300"  TextColor="Cyan"  Text="Time" VerticalTextAlignment="Center" HorizontalTextAlignment="Start"  Grid.Column="11"/>
+                        </Grid>
+                    </CollectionView.Header>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate
+               x:DataType="viewModels:PredictedStocksAutomation">
+
+
+                            <Grid ColumnDefinitions="*,*,*,*,*,*,*,*,*,*,*,*" Grid.Row="1">
+                                <Label WidthRequest="300"  Grid.Column="0"  VerticalTextAlignment="Center" HorizontalTextAlignment="Start" Grid.Row="2"   Text="{Binding Symbol }" FontSize="14" />
+                                <Label WidthRequest="300"  Grid.Column="1"  VerticalTextAlignment="Center" HorizontalTextAlignment="Start"  Grid.Row="2" Text="{Binding CandleResult_Price}" FontSize="14" />
+                                <Label WidthRequest="300"  Grid.Column="2"  VerticalTextAlignment="Center" HorizontalTextAlignment="Start" Grid.Row="2"   Text="{Binding BulishCount }" FontSize="14" />
+                                <Label WidthRequest="300"  Grid.Column="3"  VerticalTextAlignment="Center" HorizontalTextAlignment="Start" Grid.Row="2"   Text="{Binding BearishCount }" FontSize="14" />
+                                <Label WidthRequest="300"  Grid.Column="4"  VerticalTextAlignment="Center" HorizontalTextAlignment="Start" Grid.Row="2" Text="{Binding CandleResult_Match}" FontSize="14" />
+                                <Label WidthRequest="300"  Grid.Column="5"  VerticalTextAlignment="Center" HorizontalTextAlignment="Start" Grid.Row="2" Text="{Binding CandleResult_Size}" FontSize="14" />
+                                <Label WidthRequest="300"  Grid.Column="6"  VerticalTextAlignment="Center" HorizontalTextAlignment="Start"  Grid.Row="2" Text="{Binding CandleResult_Body}" FontSize="14" />
+                                <Label WidthRequest="300"  Grid.Column="7"  VerticalTextAlignment="Center" HorizontalTextAlignment="Start" Grid.Row="2" Text="{Binding Macdresult_Signal}" FontSize="14" />
+                                <Label WidthRequest="300"  Grid.Column="8"  VerticalTextAlignment="Center" HorizontalTextAlignment="Start" Grid.Row="2" Text="{Binding Macdresult_FastEma}" FontSize="14" />
+                                <Label WidthRequest="300"  Grid.Column="9"  VerticalTextAlignment="Center" HorizontalTextAlignment="Start" Grid.Row="2" Text="{Binding Macdresult_SlowEma}" FontSize="14" />
+                                <Label WidthRequest="300"  Grid.Column="10"  VerticalTextAlignment="Center" HorizontalTextAlignment="Start" Grid.Row="2" Text="{Binding Volatilityresults_Sar}" FontSize="14" />
+                                <Label WidthRequest="300"  Grid.Column="11"  VerticalTextAlignment="Center" HorizontalTextAlignment="Start" Grid.Row="2" Text="{Binding Ltt.TimeOfDay}" FontSize="14" />
+
+                                <!--<Button Grid.Column="9" Grid.Row="2"   HeightRequest="32"  IsEnabled="{Binding IsSell}" Text="Sell"  />
+                                <Button Grid.Column="10" Grid.Row="2"     HeightRequest="32" IsEnabled="{Binding IsBuy}"  Text="Buy" />-->
+                            </Grid>
+
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </ScrollView>
+        </Grid>
+    </VerticalStackLayout>
+</ContentPage>
