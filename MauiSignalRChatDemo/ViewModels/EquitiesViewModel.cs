@@ -290,7 +290,8 @@ namespace MauiSignalRChatDemo.ViewModels
                             Low = Convert.ToDecimal(livedata.low),
                             Volume = Convert.ToDecimal(livedata.ttv)
                         }).OrderBy(x => x.Date).ToList();
-                        IEnumerable<MacdResult> macdresult = quotesList.GetMacd();
+                        IEnumerable<MacdResult> macdresult = quotesList.GetMacd(12,26,9);
+                       // var GetWma = quotesList.GetWma(lookbackPeriods);
                         IEnumerable<VolatilityStopResult> Volatilityresults = quotesList.GetVolatilityStop(5, 3);
                         IEnumerable<RsiResult> rsiResults = quotesList.GetObv().GetRsi(5);
                         var candleResult = quotesList.GetMarubozu(85).OrderByDescending(x => x.Date).FirstOrDefault();
@@ -335,10 +336,10 @@ namespace MauiSignalRChatDemo.ViewModels
                     _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).Bgcolor = Convert.ToDecimal(livedata.change.Value) > 0 ? 3 : 1;
                     if (Convert.ToDecimal(livedata.last) > 0 && (findsymbol.BuyATPrice >= Convert.ToDecimal(livedata.last) || findsymbol.BuyATChange >= Convert.ToDecimal(livedata.change)) && findsymbol.IsBuy == true)
                     {
-                        int qty = Convert.ToInt16(10000 / findsymbol.BuyATPrice);
-                        await _hubConnection.SendAsync("BuyOrSellEquity", livedata.symbol, qty, "NSE", "market", Convert.ToDecimal(livedata.last.Value).ToString(), Convert.ToDecimal(livedata.last.Value).ToString(), findsymbol.StockCode, "Buy");
-                        _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).IsSell = true;
-                        _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).IsBuy = false;
+                        //int qty = Convert.ToInt16(10000 / findsymbol.BuyATPrice);
+                        //await _hubConnection.SendAsync("BuyOrSellEquity", livedata.symbol, qty, "NSE", "market", Convert.ToDecimal(livedata.last.Value).ToString(), Convert.ToDecimal(livedata.last.Value).ToString(), findsymbol.StockCode, "Buy");
+                        //_messages.FirstOrDefault(x => x.Symbol == livedata.symbol).IsSell = true;
+                        //_messages.FirstOrDefault(x => x.Symbol == livedata.symbol).IsBuy = false;
                     }
                 }
             });
