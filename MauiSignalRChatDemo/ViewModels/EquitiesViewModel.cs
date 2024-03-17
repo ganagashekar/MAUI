@@ -50,12 +50,32 @@ namespace MauiSignalRChatDemo.ViewModels
         [ObservableProperty]
         public string _match;
 
+        [ObservableProperty]
+        public decimal _volumeDifferecne;
+
 
         [ObservableProperty]
         public int _bullishCount;
 
         [ObservableProperty]
+        public int _bullishCount_100;
+
+        [ObservableProperty]
+        public int _bullishCount_95;
+
+        [ObservableProperty]
         public int _bearishCount;
+
+        [ObservableProperty]
+        public int _bearishCount_100;
+
+        [ObservableProperty]
+        public int _bearishCount_95;
+
+        [ObservableProperty]
+        public decimal? _triggredPrice;
+        [ObservableProperty]
+        public DateTime _triggredLtt;
 
         [ObservableProperty]
         public DateTime _lttDateTime;
@@ -220,7 +240,7 @@ namespace MauiSignalRChatDemo.ViewModels
             catch (Exception ex)
             {
 
-               return Convert.ToDateTime(ltt);
+                return Convert.ToDateTime(ltt);
             }
         }
         public EquitiesViewModel()
@@ -233,9 +253,9 @@ namespace MauiSignalRChatDemo.ViewModels
            // _hubConnection = new HubConnectionBuilder().WithUrl("https://localhost:7189/BreezeOperation").WithAutomaticReconnect().Build();
             _hubConnection.KeepAliveInterval = TimeSpan.FromSeconds(30);
             Connect();
-            schedule_Timer();
+
             var bullsis = new List<string>() { Match.BullBasis.ToString(), Match.BullConfirmed.ToString(), Match.BullSignal.ToString() };
-                        var barish = new List<string>() { Match.BearBasis.ToString(), Match.BearConfirmed.ToString(), Match.BearSignal.ToString() };
+            var barish = new List<string>() { Match.BearBasis.ToString(), Match.BearConfirmed.ToString(), Match.BearSignal.ToString() };
 
 
             _hubConnection.On<BuyStockAlertModel[]>("SendGetBuyStockTriggers", async result =>
@@ -267,14 +287,22 @@ namespace MauiSignalRChatDemo.ViewModels
 
             _hubConnection.On<string>("SendCaptureLiveDataForAutomation", async param =>
             {
+                
                 LiveStockData livedata = JsonSerializer.Deserialize<LiveStockData>(param);
                 livedata.LTT_DATE = GetParseLTT(livedata.ltt); //Convert.ToDateTime(livedata.ltt); //
                 var dictionaryValue = CollectionsMarshal.GetValueRefOrAddDefault(dictionary, livedata.symbol, out bool exists);
-                if (dictionaryValue==null)
+               if(dictionaryValue?.Count > 99)
+                {
+                    dictionaryValue.RemoveRange(0, 50);
+                }
+                if (dictionaryValue == null)
                 {
                     dictionaryValue = new List<LiveStockData>();
+                   // superTrendResults = new List<SuperTrendResult>();
                 }
-               
+                
+                decimal volumedifference =Convert.ToDecimal(dictionaryValue.LastOrDefault()?.ttv);
+                volumedifference= Convert.ToDecimal(livedata.ttv) - Convert.ToDecimal(volumedifference);
                 dictionaryValue.Add(livedata);
                 var findsymbol = _messages.FirstOrDefault(x => x.Symbol == livedata.symbol);
                 if (_messages.Count > 0 && findsymbol != null)
@@ -290,13 +318,25 @@ namespace MauiSignalRChatDemo.ViewModels
                             Low = Convert.ToDecimal(livedata.low),
                             Volume = Convert.ToDecimal(livedata.ttv)
                         }).OrderBy(x => x.Date).ToList();
-                        IEnumerable<MacdResult> macdresult = quotesList.GetMacd(12,26,9);
-                       // var GetWma = quotesList.GetWma(lookbackPeriods);
+                        IEnumerable<MacdResult> macdresult = quotesList.GetMacd(12, 26, 9);
+                        // var GetWma = quotesList.GetWma(lookbackPeriods);
                         IEnumerable<VolatilityStopResult> Volatilityresults = quotesList.GetVolatilityStop(5, 3);
                         IEnumerable<RsiResult> rsiResults = quotesList.GetObv().GetRsi(5);
                         var candleResult = quotesList.GetMarubozu(85).OrderByDescending(x => x.Date).FirstOrDefault();
+                        
+                        var candleResult_90 = quotesList.GetMarubozu(90).OrderByDescending(x => x.Date).FirstOrDefault();
+                        var candleResult_95 = quotesList.GetMarubozu(95).OrderByDescending(x => x.Date).FirstOrDefault();
+                        var candleResult_100 = quotesList.GetMarubozu(100).OrderByDescending(x => x.Date).FirstOrDefault();
+                        
+                        //IEnumerable<SuperTrendResult> results = quotesList.GetSuperTrend(7,3);
+                        
+                        
+
                         dictionary[livedata.symbol] = dictionaryValue.OrderByDescending(x => Convert.ToDateTime(livedata.LTT_DATE)).Take(100).ToList();
                         _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).Match = candleResult.Match.ToString();
+
+
+
                         var newresul = new
                         {
 
@@ -306,30 +346,49 @@ namespace MauiSignalRChatDemo.ViewModels
                             Volatilityresults = Volatilityresults.LastOrDefault()
                         };
                         
-                        if (candleResult != null && bullsis.Any(x=> x.ToString().Contains(candleResult.Match.ToString())))
+                        if (candleResult != null && bullsis.Any(x => x.ToString().Contains(candleResult.Match.ToString())))
                         {
-                            
+                            if (bullsis.Any(x => x.ToString().Contains(candleResult_100.Match.ToString())))
+                            {
+                                _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).BullishCount_100 = _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).BullishCount_100 + 1;
+                               
+                                if(_messages.FirstOrDefault(x => x.Symbol == livedata.symbol).BullishCount_100 == 1)
+                                {
+                                    _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).TriggredPrice = Convert.ToDecimal(livedata.last);
+                                    _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).TriggredLtt = Convert.ToDateTime(livedata.ltt);
+                                    _hubConnection.InvokeAsync("SendBullish100", livedata.stock_name,volumedifference.ToString(),livedata.last.ToString());
+                                }
+                            }
+
+                            else if (bullsis.Any(x => x.ToString().Contains(candleResult_95.Match.ToString())))
+                            {
+                                _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).BullishCount_95 = _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).BullishCount_95 + 1;
+                               
+                            }
+
+                            _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).VolumeDifferecne = (volumedifference / 100000);
                             _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).BullishCount = _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).BullishCount + 1;
                             _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).Data = JsonSerializer.Serialize(newresul);
                             _hubConnection.InvokeAsync("ExportBuyStockAlterFromAPP_IND", JsonSerializer.Serialize(_messages.Where(x => x.Symbol == livedata.symbol).ToList()));
                             _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).Data = "";
-                           // _hubConnection.InvokeAsync("GetTopStockforBuyAutomation");
+                            // _hubConnection.InvokeAsync("GetTopStockforBuyAutomation");
                         }
 
                         if (candleResult != null && barish.Any(x => x.ToString().Contains(candleResult.Match.ToString())))
                         {
+                            _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).VolumeDifferecne = (volumedifference / 100000);
                             _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).BearishCount = _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).BearishCount + 1;
                             _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).Data = JsonSerializer.Serialize(newresul);
                             _hubConnection.InvokeAsync("ExportBuyStockAlterFromAPP_IND", JsonSerializer.Serialize(_messages.Where(x => x.Symbol == livedata.symbol).ToList()));
                             _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).Data = "";
-                           // _hubConnection.InvokeAsync("GetTopStockforBuyAutomation");
+                            // _hubConnection.InvokeAsync("GetTopStockforBuyAutomation");
                         }
                     }
                     catch (Exception ex)
                     {
-                        
+
                     }
-                    
+
                     _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).LttDateTime = livedata.LTT_DATE;
                     _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).CurrentPrice = Convert.ToDecimal(livedata.last);
                     _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).CurrentChange = Convert.ToDecimal(livedata.change);
