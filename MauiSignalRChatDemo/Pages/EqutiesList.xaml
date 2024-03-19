@@ -27,9 +27,9 @@
         <Grid>
             
            
-            <ScrollView VerticalScrollBarVisibility="Always">
+            <!--<ScrollView VerticalScrollBarVisibility="Always">-->
   
-                <CollectionView
+                <CollectionView IsVisible="false"
          
                     HeightRequest="1000"
                     
@@ -83,7 +83,7 @@
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
-            </ScrollView>
+            <!--</ScrollView>-->
 
 
         </Grid>
