@@ -337,7 +337,7 @@ namespace MauiSignalRChatDemo.ViewModels
                         dictionary[livedata.symbol] = dictionaryValue.OrderByDescending(x => Convert.ToDateTime(livedata.LTT_DATE)).Take(100).ToList();
                         _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).Match = candleResult.Match.ToString();
 
-
+                        _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).StockName = livedata.stock_name + livedata.expiry_date;
 
                         var newresul = new
                         {
@@ -358,6 +358,7 @@ namespace MauiSignalRChatDemo.ViewModels
                                 {
                                     _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).TriggredPrice = Convert.ToDecimal(livedata.last);
                                     _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).TriggredLtt = livedata.LTT_DATE;
+                                   
                                     _hubConnection.InvokeAsync("SendBullish100", livedata.stock_name,volumedifference.ToString(),livedata.last.ToString());
                                 }
                             }

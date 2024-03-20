@@ -18,15 +18,15 @@ namespace MauiSignalRChatDemo.Models
         public double? low { get; set; }
         public double? change { get; set; }
         public double? bPrice { get; set; }
-        public int bQty { get; set; }
+        public int? bQty { get; set; }
         public double? sPrice { get; set; }
-        public int sQty { get; set; }
-        public int ltq { get; set; }
+        public int? sQty { get; set; }
+        public int? ltq { get; set; }
         public double? avgPrice { get; set; }
         public string quotes { get; set; }
-        public int ttq { get; set; }
-        public int totalBuyQt { get; set; }
-        public int totalSellQ { get; set; }
+        public int? ttq { get; set; }
+        public int? totalBuyQt { get; set; }
+        public int? totalSellQ { get; set; }
         public string ttv { get; set; }
         public string trend { get; set; }
         public double? lowerCktLm { get; set; }
@@ -36,22 +36,6 @@ namespace MauiSignalRChatDemo.Models
         public string ltt { get; set; }
         public DateTime LTT_DATE { set; get; }
 
-
-        //public string lttDate
-        //{
-        //    get { return ltt; }
-        //    // set { MyDate = DateTime.Parse(value); }
-        //    set
-        //    {
-        //        string[] test = this.ltt.Split(' ');
-        //        string dateformat = string.Format("{0}-{1}-{2} {3}", test.Last(), test[1].ToString(), test[2].ToString(), test[3].ToString());
-        //        DateTime.TryParse(dateformat, out var dt);
-        //        ltt = dt.ToShortDateString();
-        //    }
-        //}
-
-
-
         public double? close { get; set; }
         public string exchange { get; set; }
         public string stock_name { get; set; }
@@ -59,6 +43,13 @@ namespace MauiSignalRChatDemo.Models
         public string volumeC { get; set; }
 
         public bool isNotified { get; set; }
+
+        public string oI { get; set; }
+        public string cHNGOI { get; set; }
+        public string product_type { get; set; }
+        public string expiry_date { get; set; }
+        public string strike_price { get; set; }
+        public string right { get; set; }
 
 
         public override string ToString()
