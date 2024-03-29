@@ -16,13 +16,26 @@
 
         <Grid>
             <HorizontalStackLayout >
-                <Button 
+                <!--<Button 
                 BackgroundColor="Red"
                 Command="{Binding ExportJsonDataCommand}"
-                Text="Export" />
+                Text="Export" />-->
 
-               
+                <Label
+Text= "{Binding Totalcount}"
+TextColor= "Green" />
+                <Label
+Text= "{Binding Tempurlhub}"
+TextColor= "WhiteSmoke" />
+
+                <Label
+Text= "{Binding LatestdateTime}"
+TextColor= "Red" />
+
+
             </HorizontalStackLayout>
+            
+            
         </Grid>
         <Grid>
             

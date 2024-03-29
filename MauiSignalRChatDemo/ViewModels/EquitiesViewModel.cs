@@ -107,43 +107,19 @@ namespace MauiSignalRChatDemo.ViewModels
         [ObservableProperty]
         bool _isConnected;
 
+        [ObservableProperty]
+        int _totalcount;
+
+        [ObservableProperty]
+        string _latestdateTime;
+
+        [ObservableProperty]
+        string _tempurlhub;
 
 
-        void schedule_Timer()
-        {
-            //Console.WriteLine("### Timer Started ###");
-
-            //DateTime nowTime = DateTime.Now;
-            //DateTime scheduledTime = new DateTime(nowTime.Year, nowTime.Month, nowTime.Day, 15, 28, 0);
-            ////Specify your scheduled time HH,MM,SS [8am and 42 minutes]
-            ////if (nowTime > scheduledTime)
-            ////{
-            ////    scheduledTime = scheduledTime.AddDays(1);
-            ////}
-
-            //double tickTime = (double)(scheduledTime - DateTime.Now).TotalMilliseconds;
-            //timer = new System.Timers.Timer(tickTime);
-            //timer.Elapsed += new ElapsedEventHandler(timer_ElapsedAsync);
-            //timer.Start();
-        }
-
-        void timer_ElapsedAsync(object sender, ElapsedEventArgs e)
-        {
-            Console.WriteLine("### Timer Stopped ### \n");
-            timer.Stop();
-            try
-            {
-                _hubConnection.InvokeAsync("ExportBuyStockAlterFromAPP", JsonSerializer.Serialize(this.Messages.ToList()));
-
-                Message = string.Empty;
-            }
-            catch (Exception ex)
-            {
 
 
-            }
 
-        }
 
         public async Task InitiICICAsync()
         {
@@ -251,10 +227,43 @@ namespace MauiSignalRChatDemo.ViewModels
             //    .Build();
             //_hubConnection = new HubConnectionBuilder().WithUrl("http://localhost:45/BreezeOperation").WithAutomaticReconnect().Build();
 
-            _hubConnection = new HubConnectionBuilder().WithUrl("http://localhost:45/BreezeOperation").WithAutomaticReconnect().Build();
-            //_hubConnection = new HubConnectionBuilder().WithUrl("https://localhost:7189/BreezeOperation").WithAutomaticReconnect().Build();
+
+            string HUbUrl = string.Empty;
+            int arg =  Convert.ToInt16(Preferences.Get("arg0","").ToString());
+            //if (args.Any())
+            //    arg = args[0];
+
+
+
+            switch (Convert.ToInt16(arg))
+            {
+                case 0:
+
+                    HUbUrl = "http://localhost:90/BreezeOperation";
+                    break;
+                case 1:
+
+                    HUbUrl = "http://localhost:91/BreezeOperation";
+                    break;
+                case 2:
+
+                    HUbUrl = "http://localhost:92/BreezeOperation";
+                    break;
+                case 3:
+
+                    HUbUrl = "http://localhost:99/BreezeOperation";
+                    break;
+                case 4:
+
+                    HUbUrl = "http://localhost:49/BreezeOperation";
+                    break;
+            }
+
+            this.Tempurlhub = HUbUrl;
+            _hubConnection = new HubConnectionBuilder().WithUrl(HUbUrl).WithAutomaticReconnect().Build();
+           // _hubConnection = new HubConnectionBuilder().WithUrl("https://localhost:7189/BreezeOperation").WithAutomaticReconnect().Build();
             _hubConnection.KeepAliveInterval = TimeSpan.FromSeconds(30);
-            Connect();
+            Connect(Convert.ToInt16(arg));
 
             var bullsis = new List<string>() { Match.BullBasis.ToString(), Match.BullConfirmed.ToString(), Match.BullSignal.ToString() };
             var barish = new List<string>() { Match.BearBasis.ToString(), Match.BearConfirmed.ToString(), Match.BearSignal.ToString() };
@@ -279,32 +288,38 @@ namespace MauiSignalRChatDemo.ViewModels
                             _currentPrice = 0
                         }
                         );
+                       
                     }
 
+                   
                 });
 
-
+                this.Totalcount = result.Count();
+                this.LatestdateTime = DateTime.Now.ToShortTimeString();
+                
             });
 
 
-            _hubConnection.On<string>("SendCaptureLiveDataForAutomation", async param =>
+            _hubConnection.On<string>("SendCaptureLiveDataForAutomation",  param =>
             {
                 
                 LiveStockData livedata = JsonSerializer.Deserialize<LiveStockData>(param);
                 livedata.LTT_DATE = GetParseLTT(livedata.ltt); //Convert.ToDateTime(livedata.ltt); //
+                livedata.ttv = !string.IsNullOrEmpty(livedata.ttv) ? livedata.ttv : "0";
+                this.LatestdateTime = livedata.LTT_DATE.ToShortTimeString();
                 var dictionaryValue = CollectionsMarshal.GetValueRefOrAddDefault(dictionary, livedata.symbol, out bool exists);
                if(dictionaryValue?.Count > 99)
                 {
                     dictionaryValue.RemoveRange(0, 50);
                 }
-                if (dictionaryValue == null)
+               else if (dictionaryValue == null)
                 {
                     dictionaryValue = new List<LiveStockData>();
                    
                 }
                 
                 decimal volumedifference =Convert.ToDecimal(dictionaryValue.LastOrDefault()?.ttv);
-                volumedifference= Convert.ToDecimal(livedata.ttv) - Convert.ToDecimal(volumedifference);
+                volumedifference= !string.IsNullOrEmpty(livedata.ttv) ?  Convert.ToDecimal(livedata.ttv) - Convert.ToDecimal(volumedifference) : 0;
                 dictionaryValue.Add(livedata);
                 var findsymbol = _messages.FirstOrDefault(x => x.Symbol == livedata.symbol);
                 if (_messages.Count > 0 && findsymbol != null)
@@ -318,7 +333,7 @@ namespace MauiSignalRChatDemo.ViewModels
                             Date = Convert.ToDateTime(livedata.LTT_DATE),
                             High = Convert.ToDecimal(livedata.high),
                             Low = Convert.ToDecimal(livedata.low),
-                            Volume = Convert.ToDecimal(livedata.ttv)
+                            Volume = !string.IsNullOrEmpty(livedata.ttv) ? Convert.ToDecimal(livedata?.ttv):0
                         }).OrderBy(x => x.Date).ToList();
                         IEnumerable<MacdResult> macdresult = quotesList.GetMacd(12, 26, 9);
                         // var GetWma = quotesList.GetWma(lookbackPeriods);
@@ -336,7 +351,7 @@ namespace MauiSignalRChatDemo.ViewModels
 
                         dictionary[livedata.symbol] = dictionaryValue.OrderByDescending(x => Convert.ToDateTime(livedata.LTT_DATE)).Take(100).ToList();
                         _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).Match = candleResult.Match.ToString();
-
+                        _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).LttDateTime = Convert.ToDateTime(livedata.LTT_DATE);
                         _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).StockName = livedata.stock_name + livedata.expiry_date;
 
                         var newresul = new
@@ -392,6 +407,7 @@ namespace MauiSignalRChatDemo.ViewModels
                             _messages.FirstOrDefault(x => x.Symbol == livedata.symbol).Data = "";
                             // _hubConnection.InvokeAsync("GetTopStockforBuyAutomation");
                         }
+                        
 
                         quotesList.Clear();
                         macdresult = null;
@@ -425,17 +441,25 @@ namespace MauiSignalRChatDemo.ViewModels
 
 
         [RelayCommand]
-        async Task Connect()
+        async Task Connect(int arg)
         {
+            try
+            {
 
-            if (_hubConnection.State == HubConnectionState.Connecting ||
-                _hubConnection.State == HubConnectionState.Connected) return;
+                //if (_hubConnection.State == HubConnectionState.Connecting ||
+                //    _hubConnection.State == HubConnectionState.Connected) return;
 
-            await _hubConnection.StartAsync();
-            Messages ??= new ObservableCollection<BuyStockAlertModel>();
-            _hubConnection.SendAsync("GetBuyStockTriggers");
-            IsConnected = true;
+                await _hubConnection.StartAsync();
+                Messages ??= new ObservableCollection<BuyStockAlertModel>();
+                _hubConnection.SendAsync("GetBuyStockTriggers", Convert.ToInt16(arg));
+                IsConnected = true;
 
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
 
         }
 

@@ -30,6 +30,8 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<UseWindowsForms>False</UseWindowsForms>
 		<UseWPF>False</UseWPF>
+
+		<WindowsPackageType>None</WindowsPackageType>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -44,7 +46,8 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-	  <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net7.0-windows10.0.22621.0</TargetFrameworks>
+	  <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net8.0-windows10.0.22621.0</TargetFrameworks>
+	  <AppxPackageDir>C:\Ganga\test\</AppxPackageDir>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -70,7 +73,6 @@
 		<PackageReference Include="CommunityToolkit.Maui" Version="5.1.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.0" />
 		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.5" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
 		<PackageReference Include="Skender.Stock.Indicators" Version="2.5.0" />
 	</ItemGroup>
 
