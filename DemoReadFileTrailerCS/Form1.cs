@@ -81,13 +81,13 @@ namespace DemoReadFileTrailerCS_Automation
             for (int index = 0; index < 13; index++)
                 dt.Columns.Add(new DataColumn());
 
-            foreach (var line in lines.Split(new[] { "\r\n" }, StringSplitOptions.None))
+            foreach (var line in lines.Split(new[] { "@||@" }, StringSplitOptions.None))
             {
                 try
                 {
-                    if (!string.IsNullOrEmpty(line))
+                    if (!string.IsNullOrEmpty(line) && line.Contains("|"))
                     {
-                        var cols = line.Split(',');
+                        var cols = line.Split('|');
 
                         DataRow dr = dt.NewRow();
                         for (int cIndex = 0; cIndex < 13; cIndex++)
@@ -122,10 +122,18 @@ namespace DemoReadFileTrailerCS_Automation
                     DestinationTableName = "dbo.Ticker_Stocks_Histry_Extended_Ticks",
                     BatchSize = dt.Rows.Count
                 };
-                conn.Open();
-                bc.WriteToServer(dt);
-                conn.Close();
-                bc.Close();
+                try
+                {
+                    conn.Open();
+                    bc.WriteToServer(dt);
+                    conn.Close();
+                    bc.Close();
+                }
+                catch (Exception)
+                {
+
+                    
+                }
             }
 
 

@@ -260,6 +260,7 @@ namespace MauiSignalRChatDemo.ViewModels
             }
 
             this.Tempurlhub = HUbUrl;
+           // HUbUrl = "https://localhost:7189/breezeOperation";
             _hubConnection = new HubConnectionBuilder().WithUrl(HUbUrl).WithAutomaticReconnect().Build();
            // _hubConnection = new HubConnectionBuilder().WithUrl("https://localhost:7189/BreezeOperation").WithAutomaticReconnect().Build();
             _hubConnection.KeepAliveInterval = TimeSpan.FromSeconds(30);
@@ -300,8 +301,11 @@ namespace MauiSignalRChatDemo.ViewModels
             });
 
 
-            _hubConnection.On<string>("SendCaptureLiveDataForAutomation",  param =>
+            _hubConnection.On<string>("SendCaptureLiveDataForBuyForAutomation",  param =>
             {
+                if (_messages==null || _messages.Count==0) {
+                    return;
+                }
                 
                 LiveStockData livedata = JsonSerializer.Deserialize<LiveStockData>(param);
                 livedata.LTT_DATE = GetParseLTT(livedata.ltt); //Convert.ToDateTime(livedata.ltt); //

@@ -21,7 +21,7 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 			});
 
-		Preferences.Set("arg0", 2);
+		Preferences.Set("arg0", 1);
        // Preferences.Set("arg0", 1);
      //   Preferences.Set("arg0", 2);
         // Preferences.Set("arg0", 1);

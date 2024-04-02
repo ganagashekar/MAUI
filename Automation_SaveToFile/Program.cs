@@ -73,7 +73,7 @@ public class EquityModelAutomation
     public override string ToString()
     {
 
-        return string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12}",
+        return string.Format("{0} | {1} | {2} | {3} | {4} |{5} |{6} | {7} | {8} |{9} | {10} | {11} | {12} @||@",
             this.symbol ,  this.bullishCount_95,this.bullishCount_100, this.bullishCount, this.bearishCount, this.lttDateTime.ToString(), this.match?.ToString() ?? "", this.data?.ToString() ?? "", this.stockName?.ToString() ?? "", this.stockCode?.ToString() ?? "", this.volumeDifferecne, this.triggredPrice?.ToString() ?? "", !string.IsNullOrEmpty(this.triggredLtt.ToString()) ? this.triggredLtt.ToLongDateString() : "");
     }
 }
@@ -97,7 +97,7 @@ class Program
         var HUbUrl = "";// config.GetSection("appSettings:url").Value;
 
 
-        string arg = "";
+        string arg = "0";
         if (args.Any())
             arg = args[0];
 
@@ -129,7 +129,8 @@ class Program
         }
 
 
-
+        // HUbUrl = "https://localhost:7189/breezeOperation";
+       //  HUbUrl = "https://localhost:7189/breezeOperation";
         Console.WriteLine(HUbUrl);
 
         string filename = @"C:\Hosts\Files\" + DateTime.Now.Date.ToShortDateString() + "_Automation" + "_" + arg + ".txt";
@@ -148,7 +149,7 @@ class Program
         connection.On<string>("ExportBuyStockAlterFromAPP_IND_Filesave", async param =>
         {
 
-
+           // Console.WriteLine(param);
             RunFileSave(param, Convert.ToInt16(arg));
         });
 
@@ -192,7 +193,7 @@ class Program
             TimeSpan end = TimeSpan.Parse("09:16");   // 2 AM
             TimeSpan now = DateTime.Now.TimeOfDay;
 
-            if (count > 1000 || now <= end)
+            if (count > 1000 | now <= end)
             {
                 System.IO.File.AppendAllLines(filename, new[] { stringBuilder.ToString() });
                 stringBuilder = new StringBuilder();

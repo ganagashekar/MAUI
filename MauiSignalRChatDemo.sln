@@ -19,9 +19,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestAutomation", "..\OwnSto
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Jobs", "Jobs", "{B755BD60-B9F0-4B9E-9615-6FF2CED1355D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automation_SaveToFile", "Automation_SaveToFile\Automation_SaveToFile.csproj", "{79CFF20B-2997-4181-94FB-BA5CD87945D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automation_SaveToFile", "Automation_SaveToFile\Automation_SaveToFile.csproj", "{79CFF20B-2997-4181-94FB-BA5CD87945D4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoReadFileTrailerCS_Automation", "DemoReadFileTrailerCS\DemoReadFileTrailerCS_Automation.csproj", "{BC5E2F97-6A4D-4B67-9CF2-B8EF6B107772}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutomatioBuy", "AutomatioBuy\AutomatioBuy.csproj", "{2F228EF6-D1E2-44C5-8485-2F3AF8B7EE0F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StocksBuy", "StocksBuy\StocksBuy.csproj", "{1896BAF3-43A0-43C3-8A17-CEFAACE84535}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -67,6 +71,18 @@ Global
 		{BC5E2F97-6A4D-4B67-9CF2-B8EF6B107772}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC5E2F97-6A4D-4B67-9CF2-B8EF6B107772}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC5E2F97-6A4D-4B67-9CF2-B8EF6B107772}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F228EF6-D1E2-44C5-8485-2F3AF8B7EE0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F228EF6-D1E2-44C5-8485-2F3AF8B7EE0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F228EF6-D1E2-44C5-8485-2F3AF8B7EE0F}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{2F228EF6-D1E2-44C5-8485-2F3AF8B7EE0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F228EF6-D1E2-44C5-8485-2F3AF8B7EE0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F228EF6-D1E2-44C5-8485-2F3AF8B7EE0F}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{1896BAF3-43A0-43C3-8A17-CEFAACE84535}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1896BAF3-43A0-43C3-8A17-CEFAACE84535}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1896BAF3-43A0-43C3-8A17-CEFAACE84535}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{1896BAF3-43A0-43C3-8A17-CEFAACE84535}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1896BAF3-43A0-43C3-8A17-CEFAACE84535}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1896BAF3-43A0-43C3-8A17-CEFAACE84535}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

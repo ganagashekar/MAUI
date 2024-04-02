@@ -16,7 +16,7 @@ namespace DemoReadFileTrailerCS_AutomationCS
         static void Main(string[] args)
         {
 
-            string arg = "";
+            string arg = "0";
             if (args.Any())
                 arg = args[0];
             Application.EnableVisualStyles();
